@@ -11,14 +11,14 @@ import { Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   useDeleteContactMutation,
-  useGetContactsQuery,
+  useFetchContactsQuery,
 } from 'redux/contactsApi';
 import { ThreeDots } from 'react-loader-spinner';
 import { useSelector } from 'react-redux';
 import { getFilterContacts } from 'redux/filterContacts';
 
 export const ContactList = () => {
-  const { data, error, isLoading } = useGetContactsQuery();
+  const { data, error, isLoading } = useFetchContactsQuery();
   const filter = useSelector(getFilterContacts);
   const [deleteContact, { isLoading: loading }] = useDeleteContactMutation();
 

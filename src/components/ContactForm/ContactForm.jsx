@@ -1,13 +1,16 @@
 import { ContactsForm, ContactFormBtn } from './ContactForm.styled';
 import { useState } from 'react';
 import { TextField } from '@mui/material';
-import { useAddContactsMutation, useGetContactsQuery } from 'redux/contactsApi';
+import {
+  useAddContactsMutation,
+  useFetchContactsQuery,
+} from 'redux/contactsApi';
 import { ThreeDots } from 'react-loader-spinner';
 
 export const ContactForm = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const { data } = useGetContactsQuery();
+  const { data } = useFetchContactsQuery();
   const [addContact, { isLoading }] = useAddContactsMutation();
 
   const handleFormSubmit = e => {
@@ -41,7 +44,6 @@ export const ContactForm = () => {
           variant="outlined"
         />
         <TextField
-          onChange={e => setPhone(e.target.value)}
           type="tel"
           id="outlined-basic"
           name="number"
@@ -51,7 +53,9 @@ export const ContactForm = () => {
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
           variant="outlined"
+          onChange={e => setPhone(e.target.value)}
         />
+
         <ContactFormBtn>
           {isLoading ? (
             <ThreeDots
