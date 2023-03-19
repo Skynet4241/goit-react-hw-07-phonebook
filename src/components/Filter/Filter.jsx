@@ -1,11 +1,12 @@
 import { FilterField, FilterLabel } from './Filter.styled';
-import { useDispatch, useSelector } from 'react-redux';
-import { filterContact, getFilter } from 'redux/contactSlice';
+import { useDispatch } from 'react-redux';
 import { TextField } from '@mui/material';
+import { setFilter } from 'redux/filterContacts';
 
 export const Filter = () => {
   const dispatch = useDispatch();
-  const filter = useSelector(getFilter);
+
+  const changeFilter = e => dispatch(setFilter(e.target.value));
 
   return (
     <>
@@ -16,10 +17,7 @@ export const Filter = () => {
           label="Enter filter"
           type="text"
           variant="standard"
-          onChange={e =>
-            dispatch(filterContact(e.target.value.toLocaleLowerCase()))
-          }
-          value={filter}
+          onChange={changeFilter}
         />
       </FilterField>
     </>

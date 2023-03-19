@@ -1,7 +1,5 @@
 import { Wrap } from './ContactList.styled';
 import propTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import { deleteContact, getFilter, getItem } from 'redux/contactSlice';
 import * as React from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -11,18 +9,25 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  useDeleteContactMutation,
+  useGetContactsQuery,
+} from 'redux/contactsApi';
+import { ThreeDots } from 'react-loader-spinner';
+import { useSelector } from 'react-redux';
+import { getFilterContacts } from 'redux/filterContacts';
 
 export const ContactList = () => {
-  const dispatch = useDispatch();
-  const contactsList = useSelector(getItem);
-  const filter = useSelector(getFilter);
+  const { data, error, isLoading } = useGetContactsQuery();
+  const filter = useSelector(getFilterContacts);
+  const [deleteContact, { isLoading: loading }] = useDeleteContactMutation();
 
   const list =
     filter !== ''
-      ? contactsList.filter(item =>
+      ? data.filter(item =>
           item.name.toLowerCase().includes(filter.toLowerCase())
         )
-      : contactsList;
+      : data;
 
   return (
     <>
@@ -34,42 +39,60 @@ export const ContactList = () => {
             bgcolor: 'background.paper',
           }}
         >
-          {list.map(contact => (
-            <ListItem alignItems="flex-start" key={contact.id}>
-              <ListItemAvatar>
-                <Avatar
-                  alt={contact.name}
-                  src="https://cdn-icons-png.flaticon.com/512/5480/5480725.png"
-                />
-              </ListItemAvatar>
-              <ListItemText
-                primary={contact.name}
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      sx={{ display: 'inline' }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      {contact.number}
-                    </Typography>
-                  </React.Fragment>
-                }
+          {error ? (
+            <>Oh no, there was an error</>
+          ) : isLoading ? (
+            <Wrap>
+              <ThreeDots
+                height="80"
+                width="80"
+                radius="9"
+                color="#4fa94d"
+                ariaLabel="three-dots-loading"
+                visible={true}
               />
-              <Button
-                sx={{
-                  top: '10px',
-                }}
-                name={contact.id}
-                onClick={e => dispatch(deleteContact(e.target.name))}
-                variant="outlined"
-                startIcon={<DeleteIcon />}
-              >
-                Delete
-              </Button>
-            </ListItem>
-          ))}
+            </Wrap>
+          ) : data ? (
+            list.map(contact => (
+              <ListItem alignItems="flex-start" key={contact.id}>
+                <ListItemAvatar>
+                  <Avatar
+                    alt={contact.name}
+                    // src="https://cdn-icons-png.flaticon.com/512/5480/5480725.png"
+                    src={contact.avatar}
+                  />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={contact.name}
+                  secondary={
+                    <React.Fragment>
+                      <Typography
+                        sx={{ display: 'inline' }}
+                        component="span"
+                        variant="body2"
+                        color="text.primary"
+                      >
+                        {contact.phone}
+                      </Typography>
+                    </React.Fragment>
+                  }
+                />
+
+                <Button
+                  sx={{
+                    top: '10px',
+                  }}
+                  name={contact.id}
+                  onClick={() => deleteContact(contact.id)}
+                  variant="outlined"
+                  startIcon={<DeleteIcon />}
+                  disabled={loading}
+                >
+                  Delete
+                </Button>
+              </ListItem>
+            ))
+          ) : null}
         </List>
       </Wrap>
     </>
