@@ -15,8 +15,11 @@ export const ContactForm = () => {
 
     if (data.some(item => item.name === name)) {
       alert(`${name} is already is contacts`);
+      setName('');
+      setPhone('');
       return;
     }
+
     addContact({ name, phone });
     setName('');
     setPhone('');
